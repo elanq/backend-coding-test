@@ -64,7 +64,7 @@ module.exports = (db, logger) => {
       req.body.driver_vehicle,
     ];
 
-    const result = db.run('INSERT INTO Rides(startLat, startLong, endLat, endLong, riderName, driverName, driverVehicle) VALUES (?, ?, ?, ?, ?, ?, ?)', values, function (err) {
+    db.run('INSERT INTO Rides(startLat, startLong, endLat, endLong, riderName, driverName, driverVehicle) VALUES (?, ?, ?, ?, ?, ?, ?)', values, function insertCallback(err) {
       if (err) {
         return res.send({
           error_code: 'SERVER_ERROR',
@@ -72,17 +72,19 @@ module.exports = (db, logger) => {
         });
       }
 
-      db.all('SELECT * FROM Rides WHERE rideID = ?', this.lastID, (err, rows) => {
-        if (err) {
+      return db.all('SELECT * FROM Rides WHERE rideID = ?', this.lastID, (errSelect, rows) => {
+        if (errSelect) {
           return res.send({
             error_code: 'SERVER_ERROR',
             message: 'Unknown error',
           });
         }
 
-        res.send(rows);
+        return res.send(rows);
       });
     });
+
+    return null;
   });
 
   app.get('/rides', (req, res) => {
@@ -106,7 +108,7 @@ module.exports = (db, logger) => {
       }
       logger.info('OK', { path: '/rides' });
 
-      res.send(rows);
+      return res.send(rows);
     });
   });
 
@@ -131,7 +133,7 @@ module.exports = (db, logger) => {
       }
       logger.info('OK', { path: '/rides' });
 
-      res.send(rows);
+      return res.send(rows);
     });
   });
 

@@ -1,7 +1,5 @@
 const request = require('supertest');
 
-const { loggers } = require('winston');
-
 const sqlite3 = require('sqlite3').verbose();
 
 const db = new sqlite3.Database(':memory:');
@@ -23,7 +21,7 @@ describe('API tests', () => {
 
       buildSchemas(db);
 
-      done();
+      return done();
     });
   });
 
