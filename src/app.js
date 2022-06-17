@@ -57,7 +57,10 @@ module.exports = (db, logger) => {
         });
       }
 
-      logger.info('OK', { path: '/rides' });
+      logger.info(
+        'OK',
+        { path: '/rides', method: 'GET' },
+      );
 
       return res.send(data);
     } catch (err) {
@@ -85,7 +88,10 @@ module.exports = (db, logger) => {
         });
       }
 
-      logger.info('OK', { path: '/rides' });
+      logger.info(
+        'OK',
+        { path: '/rides/:id', method: 'GET' },
+      );
 
       return res.send(rows);
     } catch (err) {
