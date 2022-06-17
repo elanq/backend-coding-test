@@ -9,7 +9,8 @@
   "scripts": {
     "test": "mocha tests",
     "start": "node index.js",
-    "coverage": "nyc npm run test"
+    "coverage": "nyc npm run test",
+    "test:load": "artillery run scenarios/post-and-list-rides.yml"
   },
   "keywords": [
     "Xendit"

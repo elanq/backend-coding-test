@@ -9,6 +9,7 @@ Rides service is a service that responsible for rides data. This service provide
 - NodeJS 16.15 - [Installation](https://nodejs.org/en/)
 - SQLite 3.x.x - [Installation](https://www.sqlite.org/download.html)
 - (Optional) NVM for easier node version change - [Installation](https://github.com/nvm-sh/nvm)
+- Artillery for load testing tool - [Installation](https://github.com/artilleryio/artillery)
 
 ### Installation
 - Install required libraries by executing
@@ -31,6 +32,12 @@ Rides service is a service that responsible for rides data. This service provide
 - Commit any changes to your branch locally. comply with the linter rules before committing
 - Push your branch into repository. Before push the service will perform `npm run coverage` automatically. Make sure the test is green and code coverage is above 80&
 - Create your Pull Request. Specify your intent clearly in the description
+
+### Load testing
+To perform load testing execute command below
+```
+$ npm run test:load
+```
 
 ## API Endpoints
 Below is the list of supported API Endpoints of Rides service
