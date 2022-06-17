@@ -1,0 +1,35 @@
+config:
+  target: "http://localhost:8010"
+  phases:
+    - duration: 30
+      arrivalRate: 5
+      name: Warm up
+    - duration: 30
+      arrivalRate: 5
+      rampTo: 100
+      name: Ramp up load
+    - duration: 30
+      arrivalRate: 100
+      name: Sustained load
+
+scenarios:
+  - name: "Create ride, list ride and open ride detail"
+    flow:
+      - post:
+          url: "/rides"
+          json:
+            start_lat: 0
+            start_long: 90
+            end_lat: 81
+            end_long: 101
+            rider_name: "Sugiharto"
+            driver_name: "Sugeng"
+            driver_vehicle: "Motorcycle"
+          capture:
+            - json: "$[0].rideID"
+              as: "rideID"
+      - get:
+          url: "/rides"
+      - think: 5
+      - get:
+          url: "/rides/{{ rideID }}"
