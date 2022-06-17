@@ -121,6 +121,9 @@ describe('API tests', () => {
         .post('/rides')
         .send(requestBody)
         .expect('Content-Type', /json/)
+        .expect((res) => {
+          should.equal(res.body.length, 1);
+        })
         .expect(200, done);
     });
   });

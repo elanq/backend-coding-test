@@ -16,7 +16,7 @@ module.exports = (db, logger) => {
 
     const validation = rideModel.validateRideData(ride);
     if (validation != null) {
-      res.send(validation);
+      return res.send(validation);
     }
 
     try {
@@ -27,7 +27,6 @@ module.exports = (db, logger) => {
         'OK',
         { path: '/rides', method: 'POST' },
       );
-
       return res.send(rows);
     } catch (err) {
       logger.error(
