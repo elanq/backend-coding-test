@@ -47,7 +47,7 @@ async function insertNewRide(db, ride) {
   ];
 
   return new Promise((resolve, reject) => {
-    db.run('INSERT INTO Rides(startLat, startLong, endLat, endLong, riderName, driverName, driverVehicle) VALUES (?, ?, ?, ?, ?, ?, ?)', values, (err) => {
+    db.run('INSERT INTO Rides(startLat, startLong, endLat, endLong, riderName, driverName, driverVehicle) VALUES (?, ?, ?, ?, ?, ?, ?)', values, function insertRideCallback(err) {
       if (err) { reject(err); }
 
       resolve(this.lastID);
@@ -86,7 +86,7 @@ function validateRideData(ride) {
     };
   }
 
-  if (typeof driverVehicle !== 'string' || ride.driverVehicle.length < 1) {
+  if (typeof ride.driverVehicle !== 'string' || ride.driverVehicle.length < 1) {
     return {
       error_code: 'VALIDATION_ERROR',
       message: 'Driver vehicle must be a non empty string',
