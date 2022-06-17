@@ -100,7 +100,7 @@ module.exports = (db, logger) => {
       if (data.length === 0) {
         logger.error('Could not find any rides', { path: '/rides' });
 
-        return res.send({
+        return res.status(404).send({
           error_code: 'RIDES_NOT_FOUND_ERROR',
           message: 'Could not find any rides',
         });
@@ -110,9 +110,9 @@ module.exports = (db, logger) => {
 
       return res.send(data);
     } catch (err) {
-      logger.error('Unknown error', { path: '/rides', error: err });
+      logger.error('Unknown error', { path: '/rides', error: err.message });
 
-      return res.send({
+      return res.status(500).send({
         error_code: 'SERVER_ERROR',
         message: 'Unknown error',
       });
