@@ -13,6 +13,10 @@ const app = require('../src/app')(db, require('winston'));
 const buildSchemas = require('../src/schemas');
 
 describe('API tests', () => {
+  afterEach(() => {
+    db.run('DELETE FROM Rides');
+  });
+
   before((done) => {
     db.serialize((err) => {
       if (err) {
@@ -108,11 +112,62 @@ describe('API tests', () => {
   });
 
   describe('GET /rides', () => {
-    it('should return list of rides', (done) => {
-      request(app)
-        .get('/rides')
-        .expect('Content-Type', /json/)
-        .expect(200, done);
+    describe('when endpoint return results', () => {
+      before(() => {
+        const values = [
+          10,
+          90,
+          81,
+          101,
+          'Sugiharto',
+          'Sugeng',
+          'Motorcycle',
+        ];
+        db.run('INSERT INTO Rides(startLat, startLong, endLat, endLong, riderName, driverName, driverVehicle) VALUES (?, ?, ?, ?, ?, ?, ?)', values);
+      });
+
+      it('should return list of rides', (done) => {
+        request(app)
+          .get('/rides')
+          .expect('Content-Type', /json/)
+          .expect((res) => {
+            should.exist(res.body);
+            should.equal(res.body.length, 1);
+          })
+          .expect(200, done);
+      });
+    });
+
+    describe('when endpoint return zero results', () => {
+      const expectedErrorCode = 'RIDES_NOT_FOUND_ERROR';
+      const expectedMessage = 'Could not find any rides';
+
+      it('should return expected error message', (done) => {
+        request(app)
+          .get('/rides')
+          .expect('Content-Type', /json/)
+          .expect((res) => {
+            should.equal(res.body.error_code, expectedErrorCode);
+            should.equal(res.body.message, expectedMessage);
+          })
+          .expect(404, done);
+      });
+    });
+
+    describe('when endpoint experiences query issue', () => {
+      const expectedErrorCode = 'SERVER_ERROR';
+      const expectedMessage = 'Unknown error';
+
+      it('should return expected error message', (done) => {
+        request(app)
+          .get('/rides?offset=fdsfd&limit=fmdf')
+          .expect('Content-Type', /json/)
+          .expect((res) => {
+            should.equal(res.body.error_code, expectedErrorCode);
+            should.equal(res.body.message, expectedMessage);
+          })
+          .expect(500, done);
+      });
     });
   });
 

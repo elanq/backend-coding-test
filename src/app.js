@@ -6,6 +6,8 @@ const bodyParser = require('body-parser');
 
 const jsonParser = bodyParser.json();
 
+const rideModel = require('./model/ride');
+
 module.exports = (db, logger) => {
   app.get('/health', (req, res) => res.send('Healthy'));
 
@@ -87,29 +89,34 @@ module.exports = (db, logger) => {
     return null;
   });
 
-  app.get('/rides', (req, res) => {
-    db.all('SELECT * FROM Rides', (err, rows) => {
-      if (err) {
-        logger.error('Unknown error', { path: '/rides' });
+  app.get('/rides', async (req, res) => {
+    const offset = req.query.offset || 0;
 
-        return res.send({
-          error_code: 'SERVER_ERROR',
-          message: 'Unknown error',
-        });
-      }
+    const limit = req.query.limit || 10;
 
-      if (rows.length === 0) {
+    try {
+      const data = await rideModel.listRides(db, offset, limit);
+
+      if (data.length === 0) {
         logger.error('Could not find any rides', { path: '/rides' });
 
-        return res.send({
+        return res.status(404).send({
           error_code: 'RIDES_NOT_FOUND_ERROR',
           message: 'Could not find any rides',
         });
       }
+
       logger.info('OK', { path: '/rides' });
 
-      return res.send(rows);
-    });
+      return res.send(data);
+    } catch (err) {
+      logger.error('Unknown error', { path: '/rides', error: err.message });
+
+      return res.status(500).send({
+        error_code: 'SERVER_ERROR',
+        message: 'Unknown error',
+      });
+    }
   });
 
   app.get('/rides/:id', (req, res) => {
