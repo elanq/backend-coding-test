@@ -4,6 +4,34 @@ Rides service is a service that responsible for rides data. This service provide
 2. List and filter ride data
 3. Get single ride data
 
+## Setup
+### Requirements
+- NodeJS 16.15 - [Installation](https://nodejs.org/en/)
+- SQLite 3.x.x - [Installation](https://www.sqlite.org/download.html)
+- (Optional) NVM for easier node version change - [Installation](https://github.com/nvm-sh/nvm)
+
+### Installation
+- Install required libraries by executing
+  ```
+  $ npm install
+  ```
+- run test and code coverage. make sure all cases are green and code coverage is above 80% on all aspect
+  ```
+  $ npm run coverage
+  ```
+- run the server
+  ```
+  $ npm start
+  $ {"level":"info","message":"App started and listening on port 8010"}
+  ```
+
+### Contributing
+
+- Create new branch from `master` branch
+- Commit any changes to your branch locally. comply with the linter rules before committing
+- Push your branch into repository. Before push the service will perform `npm run coverage` automatically. Make sure the test is green and code coverage is above 80&
+- Create your Pull Request. Specify your intent clearly in the description
+
 ## API Endpoints
 Below is the list of supported API Endpoints of Rides service
 
