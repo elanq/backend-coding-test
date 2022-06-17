@@ -119,29 +119,32 @@ module.exports = (db, logger) => {
     }
   });
 
-  app.get('/rides/:id', (req, res) => {
-    db.all(`SELECT * FROM Rides WHERE rideID='${req.params.id}'`, (err, rows) => {
-      if (err) {
-        logger.error('Unknown error', { path: '/rides' });
+  app.get('/rides/:id', async (req, res) => {
+    const rideID = req.params.id;
 
-        return res.send({
-          error_code: 'SERVER_ERROR',
-          message: 'Unknown error',
-        });
-      }
+    try {
+      const rows = await rideModel.getRideByID(db, rideID);
 
       if (rows.length === 0) {
-        logger.error('Unknown error', { path: '/rides' });
+        logger.error('Could not find any rides', { path: '/rides', error: 'RIDES_NOT_FOUND_ERROR' });
 
-        return res.send({
+        return res.status(404).send({
           error_code: 'RIDES_NOT_FOUND_ERROR',
           message: 'Could not find any rides',
         });
       }
+
       logger.info('OK', { path: '/rides' });
 
       return res.send(rows);
-    });
+    } catch (err) {
+      logger.error('Unknown error', { path: '/rides', error: err.message });
+
+      return res.status(500).send({
+        error_code: 'SERVER_ERROR',
+        message: 'Unknown error',
+      });
+    }
   });
 
   return app;

@@ -12,6 +12,20 @@ const app = require('../src/app')(db, require('winston'));
 
 const buildSchemas = require('../src/schemas');
 
+function performInsert() {
+  const values = [
+    101,
+    10,
+    90,
+    81,
+    101,
+    'Sugiharto',
+    'Sugeng',
+    'Motorcycle',
+  ];
+  db.run('INSERT INTO Rides(rideID, startLat, startLong, endLat, endLong, riderName, driverName, driverVehicle) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', values);
+}
+
 describe('API tests', () => {
   afterEach(() => {
     db.run('DELETE FROM Rides');
@@ -114,16 +128,7 @@ describe('API tests', () => {
   describe('GET /rides', () => {
     describe('when endpoint return results', () => {
       before(() => {
-        const values = [
-          10,
-          90,
-          81,
-          101,
-          'Sugiharto',
-          'Sugeng',
-          'Motorcycle',
-        ];
-        db.run('INSERT INTO Rides(startLat, startLong, endLat, endLong, riderName, driverName, driverVehicle) VALUES (?, ?, ?, ?, ?, ?, ?)', values);
+        performInsert();
       });
 
       it('should return list of rides', (done) => {
@@ -172,11 +177,37 @@ describe('API tests', () => {
   });
 
   describe('GET /rides/:id', () => {
-    it('should return detail of ride', (done) => {
-      request(app)
-        .get('/rides/1')
-        .expect('Content-Type', /json/)
-        .expect(200, done);
+    describe('when rides is exists', () => {
+      before(() => {
+        performInsert();
+      });
+
+      it('should return detail of ride', (done) => {
+        request(app)
+          .get('/rides/101')
+          .expect('Content-Type', /json/)
+          .expect((res) => {
+            should.equal(res.body.length, 1);
+            should.equal(res.body[0].rideID, 101);
+          })
+          .expect(200, done);
+      });
+    });
+
+    describe('when rides is not exists', () => {
+      it('should return expected error message', (done) => {
+        const expectedErrorCode = 'RIDES_NOT_FOUND_ERROR';
+        const expectedMessage = 'Could not find any rides';
+
+        request(app)
+          .get('/rides/777')
+          .expect('Content-Type', /json/)
+          .expect((res) => {
+            should.equal(res.body.error_code, expectedErrorCode);
+            should.equal(res.body.message, expectedMessage);
+          })
+          .expect(404, done);
+      });
     });
   });
 });

@@ -11,6 +11,19 @@ async function listRides(db, offset = 0, limit = 10) {
   });
 }
 
+async function getRideByID(db, rideID) {
+  const query = 'SELECT * FROM Rides WHERE rideID = ?';
+
+  return new Promise((resolve, reject) => {
+    db.all(query, [rideID], (err, rows) => {
+      if (err != null) { reject(err); }
+
+      resolve(rows);
+    });
+  });
+}
+
 module.exports = {
   listRides,
+  getRideByID,
 };
